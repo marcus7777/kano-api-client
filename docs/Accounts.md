@@ -2,8 +2,8 @@
 
 ## Add and import the library
 First of all, you have to add the library as a bower dependency:
-```js
-bower i KanoComputing/kano-api-client.git
+```
+bower i KanoComputing/kano-api-client.git --save
 ```
 Then import and initialize it like this:
 ```js
