@@ -56,14 +56,16 @@ suite('client base', () => {
         })
       }
     })
-    API.forgotUsername({
-      params: {
-        user: {
-        }
-      }      
-    }).catch((e) => {
+    try {
+      API.forgotUsername({
+        params: {
+          user: {
+          }
+        }      
+      })
+    } catch (e) {
       assert.equal(e.message, "need a params.user.email in the Object") 
-    })
+    }
   })
   test("forgotUsername for a valid email", () => {
     var API = client({
@@ -95,30 +97,35 @@ suite('client base', () => {
         })
       }
     })
-    API.forgotUsername({
-      params: {
-        user: {
-          email: "1234567890f7ypfy873pf12345678912@34567.com"
-        }
-      }      
-    }).then(() => {
-      assert.equal(1,0) 
-    }).catch((e) => {
+    try {
+      API.forgotUsername({
+        params: {
+          user: {
+            email: "1234567890f7ypfy873pf12345678912@34567.com"
+          }
+        }      
+      }).then(() => {
+        assert.equal(1,0) 
+      })
+    } catch(e) {
       assert.equal(e.message,"invalid email") 
-    })
+    }
   })
   test("forgotPassword for a no username", () => {
+
     var API = client({
       defaultUrl:'./fakeApi'
     })
-    API.forgotPassword({
-      params: {
-        user: {
-        }
-      }      
-    }).catch((e) => {
+    try {
+      API.forgotPassword({
+        params: {
+          user: {
+          }
+        }      
+      })
+    } catch(e) {
       assert.equal(e.message, "need a params.user.username in the Object") 
-    })
+    }
   })
   test("forgotPassword for a valid username", () => {
     var API = client({
@@ -134,7 +141,7 @@ suite('client base', () => {
     API.forgotPassword({
       params: {
         user: {
-          username: "marcus@hhost.me"
+          username: "marcus7777"
         }
       }      
     }).then((ok) => {
@@ -150,17 +157,19 @@ suite('client base', () => {
         })
       }
     })
-    API.forgotPassword({
-      params: {
-        user: {
-          username: "1234567890f7ypfy873pf12345678912@34567.com"
-        }
-      }      
-    }).then(() => {
-      assert.equal(1,0) 
-    }).catch((e) => {
-      assert.equal(e.message,"invalid email") 
-    })
+    try {
+      API.forgotPassword({
+        params: {
+          user: {
+            username: "..."
+          }
+        }      
+      }).then(() => {
+        assert.equal(1,0) 
+      })
+    } catch(e) {
+      assert.equal(e.message,"invalid username") 
+    }
   })
   test("can a user be created",() => {
     localStorage.clear()

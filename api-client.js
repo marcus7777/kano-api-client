@@ -361,7 +361,7 @@ export default function (settings) {
     forgotUsername: (args) => {
       if (args && args.params && args.params.user && args.params.user.email) {
         var email = args.params.user.email
-        if (/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}/gmi.test(email)) {
+        if (/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}/gi.test(email)) {
           return poster(email , 'accounts/forgotUsername' ).then((response) => {
             if (response.data === 'true') {
               return API.read(args)
@@ -377,9 +377,9 @@ export default function (settings) {
       }
     },
     forgotPassword: (args) => {
-      if (args && args.params && args.params.user && args.params.user.email) {
+      if (args && args.params && args.params.user && args.params.user.username) {
         var username = args.params.user.username
-        if (username) {
+        if (/^[0-9a-z]*$/gi.test(username)) {
           return poster(username, 'accounts/forgotPassword' ).then((response) => {
             if (response.data === 'true') {
               return API.read(args)
