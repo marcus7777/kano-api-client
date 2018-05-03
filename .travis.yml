@@ -8,7 +8,7 @@ addons:
   chrome: stable
 
 before_script:
-  - npm i
+  - yarn
   - bower i
 
 script:
