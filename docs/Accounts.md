@@ -10,7 +10,7 @@ Then import and initialize it like this:
 import ApiClient from '../../bower_components/kano-api-client/kano-api-client.js';
 
 const API = ApiClient({
-    worldUrl: Config.WORLD_URL,
+    defaultUrl: Config.WORLD_URL,
     resolve: true,
     log: true,
 });
