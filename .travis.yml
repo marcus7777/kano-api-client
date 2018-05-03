@@ -9,6 +9,7 @@ addons:
 
 before_script:
   - npm i
+  - npm i -g bower
   - bower i
 
 script:
