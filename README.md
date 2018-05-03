@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/marcus7777/kano-api-client.svg?branch=master)](https://travis-ci.org/marcus7777/kano-api-client)
+
 Install as a Bower component then import clients from a client API
 ```js
 import client from './kano-api-client.js';
