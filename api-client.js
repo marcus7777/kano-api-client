@@ -47,7 +47,7 @@ export default function (settings) {
           if (accessToken) {
             theFetch.headers.authorization = `Bearer ${accessToken}`
           }
-          fetch(settings.defaultUrl + "/" + path, theFetch).then((response) => {
+          fetch(settings.defaultUrl + '/' + path, theFetch).then((response) => {
             return response.json()
           }).then(dataFromServer => {
             if (dataFromServer !== undefined && dataFromServer !== null) {
@@ -362,7 +362,7 @@ export default function (settings) {
       if (args && args.params && args.params.user && args.params.user.email) {
         var email = args.params.user.email
         if (/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}/gi.test(email)) {
-          return poster(email , 'accounts/forgotUsername' ).then((response) => {
+          return poster(email, 'accounts/forgotUsername').then((response) => {
             if (response.data === 'true') {
               return API.read(args)
             } else {
@@ -380,7 +380,7 @@ export default function (settings) {
       if (args && args.params && args.params.user && args.params.user.username) {
         var username = args.params.user.username
         if (/^[0-9a-z]*$/gi.test(username)) {
-          return poster(username, 'accounts/forgotPassword' ).then((response) => {
+          return poster(username, 'accounts/forgotPassword').then((response) => {
             if (response.data === 'true') {
               return API.read(args)
             } else {
@@ -449,7 +449,9 @@ export default function (settings) {
       }
     },
     read: (args) => {
-      return API._read(Object.assign({ sync: true }, args))
+      return new Promise((resolve, reject) => {
+        resolve(API._read(Object.assign({ sync: true }, args)))
+      })
     },
     _read: (args) => {
       if (args.populate) {
@@ -480,8 +482,82 @@ export default function (settings) {
       } else {
         return {}
       }
-    }
+    },
+    login: (args) => {
+      if (!args.params) {
+        throw new Error("need params e.g. API.login({params: {username: 'marcus7777', password: 'monkey123'}})")
+      }
+      if (!args.params.username) {
+        throw new Error("need a username e.g. {username: 'marcus7777', password: 'monkey123'}")
+      }
+      // are you login already?
+      return API.read({
+        populate: {
+          username: 'user.username',
+          _localToken: 'user._localToken',
+          _accessToken: 'user._accessToken'
+        },
+        sync: false
+      }).then(async (user) => {
+        if (!user) {
+          if (settings.log) { console.error('error got user') }
+        }
+        if (await user.username === undefined) { // so you are not logged in
+          if (!args.params.password) {
+            throw new Error("need a password e.g. username: 'marcus7777', password: 'monkey123'")
+          }
+          return makeLocalToken(args.params.username.toLowerCase(), args.params.password).then((localToken) => {
+            return poster(args.params, '/accounts/auth').then((res) => {
+              const token = res.data.token
+              const duration = res.data.duration
+              const renew = Date.now() + ((duration / 2) * 1000)
 
+              API.isLoggedIn = args.params.username
+
+              return sha256(args.params.username).then((userHashAb) => {
+                const userHash = arrayToBase64(userHashAb)
+
+                localStorage.setItem('user', JSON.stringify({
+                  mapTo: `users.${args.params.username}`,
+                  username: args.params.username,
+                  _localToken: localToken, // to encrypt with when logged out
+                  _accessToken: token, // to access server
+                  userHash,
+                  renew
+                }))
+              }).then(() => {
+                return API.read({ populate: args.populate })
+              })
+            }).catch((err) => {
+              if (err === 'offline') {
+                return sha256(args.params.username).then((userHashAb) => {
+                  const userHash = arrayToBase64(userHashAb)
+                  const savedData = decryptString(
+                    localToken,
+                    localStorage.getItem(userHash)
+                  )
+                  localStorage.setItem('user', savedData)
+                }).then(() => {
+                  return API.read({ populate: args.populate })
+                })
+              }
+              throw err
+            })
+          }).catch((err) => {
+            console.error(err)
+            return API.read(args)
+          })
+          // TODO  if logged in as something else
+        } else if (await user.username === args.params.username) {
+          if (settings.log) { console.log('you are (and were) logged in :)') }
+        } else if (await user.username !== args.params.username) {
+          return API.logout().then(() => {
+            return API.login(args)
+          })
+        }
+        return API.read(Object.assign({ sync: true }, args))
+      })
+    }
   }
   return API
 }

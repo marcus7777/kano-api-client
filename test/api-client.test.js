@@ -29,7 +29,12 @@ suite('client base', () => {
   });
   test("has username been not taken", () => {
     var API = client({
-      defaultUrl:'./fakeApi'
+      defaultUrl:'./fakeApi',
+      getDataFromServer: () => {
+        return new Promise((resolve) => {
+          resolve("false")
+        })
+      },
     })
     var query = "users.marcus7778"
     API.check(query).then((exists) => {
@@ -38,7 +43,12 @@ suite('client base', () => {
   })
   test("has username been taken", () => {
     var API = client({
-      defaultUrl:'./fakeApi'
+      defaultUrl:'./fakeApi',
+      getDataFromServer: () => {
+        return new Promise((resolve) => {
+          resolve("true")
+        })
+      },
     })
     var query = "users.marcus7777"
     API.check(query).then((exists) => {
@@ -93,7 +103,7 @@ suite('client base', () => {
       defaultUrl:'./fakeApi/',
       poster: function() {
         return new Promise(function(resolve, reject) { 
-          reject()
+          reject({})
         })
       }
     })
@@ -104,15 +114,12 @@ suite('client base', () => {
             email: "1234567890f7ypfy873pf12345678912@34567.com"
           }
         }      
-      }).then(() => {
-        assert.equal(1,0) 
       })
     } catch(e) {
       assert.equal(e.message,"invalid email") 
     }
   })
   test("forgotPassword for a no username", () => {
-
     var API = client({
       defaultUrl:'./fakeApi'
     })
@@ -171,9 +178,13 @@ suite('client base', () => {
       assert.equal(e.message,"invalid username") 
     }
   })
+})
+suite('client user', () => {
+  var name = "test" + (Math.random()+"").replace(".","")
+  var password = "342340bab5uxexeuee4"
+
   test("can a user be created",() => {
     localStorage.clear()
-    var name = "test" + (Math.random()+"").replace(".","")
     var API = client({
       defaultUrl:'./fakeApi/',
       poster: function() {
@@ -188,7 +199,7 @@ suite('client base', () => {
         user: {
           username: name,
           email: "marcus@kano.me",
-          password: "342340bab5uxexeuee4",
+          password,
         }
       },
       populate:{
@@ -198,4 +209,24 @@ suite('client base', () => {
       assert.equal(user.id, "5ae9b582a82d9f26ec6ea2ea") 
     })
   })
+  test("user is logged in",() => {
+    localStorage.clear()
+    var API = client({
+      defaultUrl:'./fakeApi/',
+      getDataFromServer: () => {
+        return new Promise((resolve) => {
+          resolve(JSON.parse(`{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}`))
+        })
+      },
+    })
+    API.login({
+      params: {
+        username: name,
+        password,
+      }    
+    }).then(() => {
+      assert.equal(API.isLoggedIn, name)
+    })
+  })
+
 });
