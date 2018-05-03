@@ -47,7 +47,7 @@ suite('client base', () => {
   })
   test("forgotUsername for a no email", () => {
     var API = client({
-      defaultUrl:'./fakeApi'
+      defaultUrl:'./fakeApi',
       poster: function() {
         return new Promise(function(resolve, reject) { 
           resolve({
