@@ -32,7 +32,7 @@ suite('client base', () => {
       defaultUrl:'./fakeApi',
       getDataFromServer: () => {
         return new Promise((resolve) => {
-          resolve("false")
+          resolve({data:"false"})
         })
       },
     })
@@ -46,7 +46,7 @@ suite('client base', () => {
       defaultUrl:'./fakeApi',
       getDataFromServer: () => {
         return new Promise((resolve) => {
-          resolve("true")
+          resolve({data:"true"})
         })
       },
     })
@@ -200,14 +200,19 @@ suite('client user', () => {
       populate:{
         id:"user.id"
       }
-    }).then((user) => {
-      assert.equal(user.id, "5ae9b582a82d9f26ec6ea2ea") 
+    }).then( async (user) => {
+      assert.equal(await user.id, "5ae9b582a82d9f26ec6ea2ea") 
     })
   })
   test("user is logged in",() => {
     localStorage.clear()
     var API = client({
       defaultUrl:'./fakeApi/',
+      poster: () => {
+        return new Promise((resolve) => {
+          resolve(JSON.parse(`{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}`))
+        })
+      },
       getDataFromServer: () => {
         return new Promise((resolve) => {
           resolve(JSON.parse(`{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}`))
@@ -216,8 +221,10 @@ suite('client user', () => {
     })
     API.login({
       params: {
-        username: name,
-        password,
+        user: {
+          username: name,
+          password,
+        }
       }    
     }).then(() => {
       assert.equal(API.isLoggedIn, name)

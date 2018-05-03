@@ -321,6 +321,9 @@ export default function (settings) {
     })
   }
   function makeLocalToken (username, password) {
+    if (!username || !password) {
+      throw new Error("need Both username & password")
+    }
     return sha256(username + password).then((localhash) => {
       return crypto.subtle.importKey('raw', localhash, { name: 'AES-CBC' }, true, ['encrypt', 'decrypt'])
     }).then((key) => {
@@ -419,7 +422,7 @@ export default function (settings) {
 
                 return makeLocalToken(
                   user.username,
-                  user.password
+                  args.params.user.password
                 ).then((localToken) => {
                   return sha256(user.username).then((hash) => {
                     const userHash = arrayToBase64(hash)
@@ -485,9 +488,9 @@ export default function (settings) {
     },
     login: (args) => {
       if (!args.params) {
-        throw new Error("need params e.g. API.login({params: {username: 'marcus7777', password: 'monkey123'}})")
+        throw new Error("need params e.g. API.login({params: {user: {username: 'marcus7777', password: 'monkey123'}}})")
       }
-      if (!args.params.username) {
+      if (!args.params.user) {
         throw new Error("need a username e.g. {username: 'marcus7777', password: 'monkey123'}")
       }
       // are you login already?
@@ -505,23 +508,23 @@ export default function (settings) {
           if (settings.log) { console.log('user', user) }
         }
         if (await user.username === undefined) { // so you are not logged in
-          if (!args.params.password) {
+          if (!args.params.user.password) {
             throw new Error("need a password e.g. username: 'marcus7777', password: 'monkey123'")
           }
-          return makeLocalToken(args.params.username.toLowerCase(), args.params.password).then((localToken) => {
-            return poster(args.params, 'accounts/auth').then((res) => {
+          return makeLocalToken(args.params.user.username.toLowerCase(), args.params.user.password).then((localToken) => {
+            return poster(args.params.user, 'accounts/auth').then((res) => {
               const token = res.data.token
               const duration = res.data.duration
               const renew = Date.now() + ((duration / 2) * 1000)
 
-              API.isLoggedIn = args.params.username
+              API.isLoggedIn = args.params.user.username
 
-              return sha256(args.params.username).then((userHashAb) => {
+              return sha256(args.params.user.username).then((userHashAb) => {
                 const userHash = arrayToBase64(userHashAb)
 
                 localStorage.setItem('user', JSON.stringify({
-                  mapTo: `users.${args.params.username}`,
-                  username: args.params.username,
+                  mapTo: `users.${args.params.user.username}`,
+                  username: args.params.user.username,
                   _localToken: localToken, // to encrypt with when logged out
                   _accessToken: token, // to access server
                   userHash,
@@ -532,7 +535,7 @@ export default function (settings) {
               })
             }).catch((err) => {
               if (err === 'offline') {
-                return sha256(args.params.username).then((userHashAb) => {
+                return sha256(args.params.user.username).then((userHashAb) => {
                   const userHash = arrayToBase64(userHashAb)
                   const savedData = decryptString(
                     localToken,
