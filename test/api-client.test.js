@@ -101,17 +101,12 @@ suite('client base', () => {
   test("forgotUsername for a invalid email", () => {
     var API = client({
       defaultUrl:'./fakeApi/',
-      poster: function() {
-        return new Promise(function(resolve, reject) { 
-          reject({})
-        })
-      }
     })
     try {
       API.forgotUsername({
         params: {
           user: {
-            email: "1234567890f7ypfy873pf12345678912@34567.com"
+            email: "1234567890f7ypfy873pf1234567891234567.com"
           }
         }      
       })

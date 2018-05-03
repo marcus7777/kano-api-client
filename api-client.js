@@ -253,7 +253,7 @@ export default function (settings) {
           renewToken()
           return theData
         }
-        throw new Error('no post')
+        throw new Error(response.message + ' ' + response.status)
       })
     })
   }
@@ -425,7 +425,7 @@ export default function (settings) {
                     const userHash = arrayToBase64(hash)
                     return localStorage.setItem(
                       'user',
-                      JSON.stringify(Object.assign(localStorage.user, {
+                      JSON.stringify(Object.assign(localStorage.user || {}, {
                         renew,
                         userHash,
                         _accessToken: token,
@@ -501,13 +501,15 @@ export default function (settings) {
       }).then(async (user) => {
         if (!user) {
           if (settings.log) { console.error('error got user') }
+        } else {
+          if (settings.log) { console.log('user', user) }
         }
         if (await user.username === undefined) { // so you are not logged in
           if (!args.params.password) {
             throw new Error("need a password e.g. username: 'marcus7777', password: 'monkey123'")
           }
           return makeLocalToken(args.params.username.toLowerCase(), args.params.password).then((localToken) => {
-            return poster(args.params, '/accounts/auth').then((res) => {
+            return poster(args.params, 'accounts/auth').then((res) => {
               const token = res.data.token
               const duration = res.data.duration
               const renew = Date.now() + ((duration / 2) * 1000)
@@ -557,6 +559,12 @@ export default function (settings) {
         }
         return API.read(Object.assign({ sync: true }, args))
       })
+    },
+    update: (args) => {
+      Object.keys(args.params).forEach((key) => {
+        setter(key, args.params[key])
+      })
+      return API.read(Object.assign({ sync: true }, args))
     }
   }
   return API
