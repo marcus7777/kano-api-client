@@ -28,8 +28,11 @@ The fields you can ask for return are:
 - `id`
 - `username`
 - `avatar`
-- `followers`
-- `following`
+- `ui`
+    - `followers`
+        - `list`
+    - `following`
+        - `list`
 - `email`
 - `...`
 
