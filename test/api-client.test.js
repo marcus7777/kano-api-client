@@ -19,7 +19,7 @@ suite('client base', () => {
     var API = client({
       defaultUrl:'./fakeApi'
     })
-    assert.equal(!!API,true) 
+    assert.ok(API) 
   });
   test("make sure there is no user logged in yet" , () => {
     var API = client({
@@ -88,7 +88,8 @@ suite('client base', () => {
         }
       }      
     }).then((ok) => {
-      assert.equal(!!ok, true) 
+      assert.ok(ok) 
+        
     })
   })
   test("forgotUsername for a invalid email", () => {
@@ -140,7 +141,7 @@ suite('client base', () => {
         }
       }      
     }).then((ok) => {
-      assert.equal(!!ok, true) 
+      assert.ok(ok)
     })
   })
   test("forgotPassword for a invalid username", () => {
@@ -248,7 +249,7 @@ suite('client user', () => {
     }).then(() => {
       return API.logout()
     }).then(() => {
-      assert.equal(!!localStorage.getItem("47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU="), true)
+      assert.ok(localStorage.getItem("47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU="), "not save encryptString")
       return assert.equal(API.isLoggedIn, false)
     })
   })
