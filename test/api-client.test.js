@@ -58,13 +58,6 @@ suite('client base', () => {
   test("forgotUsername for a no email", () => {
     var API = client({
       defaultUrl:'./fakeApi',
-      poster: function() {
-        return new Promise(function(resolve, reject) { 
-          resolve({
-            data:"invalid email"
-          })
-        })
-      }
     })
     try {
       API.forgotUsername({
@@ -189,7 +182,7 @@ suite('client user', () => {
         })
       }
     })
-    API.create({
+    return API.create({
       params: {
         user: {
           username: name,
@@ -219,7 +212,7 @@ suite('client user', () => {
         })
       },
     })
-    API.login({
+    return API.login({
       params: {
         user: {
           username: name,
@@ -228,6 +221,34 @@ suite('client user', () => {
       }    
     }).then(() => {
       assert.equal(API.isLoggedIn, name)
+    })
+  })
+  test("user is logged in and out",() => {
+    localStorage.clear()
+    var API = client({
+      defaultUrl:'./fakeApi/',
+      poster: () => {
+        return new Promise((resolve) => {
+          resolve(JSON.parse(`{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}`))
+        })
+      },
+      getDataFromServer: () => {
+        return new Promise((resolve) => {
+          resolve(JSON.parse(`{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}`))
+        })
+      },
+    })
+    return API.login({
+      params: {
+        user: {
+          username: name,
+          password,
+        }
+      }    
+    }).then(() => {
+      return API.logout()
+    }).then(() => {
+      return assert.equal(API.isLoggedIn, false)
     })
   })
 

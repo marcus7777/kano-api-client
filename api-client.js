@@ -322,7 +322,7 @@ export default function (settings) {
   }
   function makeLocalToken (username, password) {
     if (!username || !password) {
-      throw new Error("need Both username & password")
+      throw new Error('need Both username & password')
     }
     return sha256(username + password).then((localhash) => {
       return crypto.subtle.importKey('raw', localhash, { name: 'AES-CBC' }, true, ['encrypt', 'decrypt'])
@@ -439,7 +439,9 @@ export default function (settings) {
                   })
                 }).then(() => {
                   return API.update(Object.assign(args, {
-                    params: user
+                    params: {
+                      user
+                    }
                   }))
                 })
               }
@@ -568,6 +570,24 @@ export default function (settings) {
         setter(key, args.params[key])
       })
       return API.read(Object.assign({ sync: true }, args))
+    },
+    logout: () => {
+      return getter('user._localToken').then((localToken) => {
+        if (localToken) {
+          const ls = localStorage
+          return encryptString(localToken, ls.getItem('user')).then((encrypted) => {
+            sha256(ls.user.username).then((userSHA) => {
+              ls.setItem(arrayToBase64(userSHA), ab2str(encrypted))
+              ls.removeItem('user')
+            })
+            API.isLoggedIn = false
+          }).catch((err) => {
+            console.error(err)
+          })
+        }
+      }).catch((err) => {
+        console.error(err)
+      })
     }
   }
   return API
