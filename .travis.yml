@@ -7,8 +7,5 @@ sudo: required
 addons:
   chrome: stable
 
-before_script:
-  - bower i
-
 script:
   - npm test
