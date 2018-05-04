@@ -1,9 +1,21 @@
 [![Build Status](https://travis-ci.org/marcus7777/kano-api-client.svg?branch=master)](https://travis-ci.org/marcus7777/kano-api-client)
 
-Install as a Bower component then import clients from a client API
-```js
-import client from './kano-api-client.js';
+## Add and import the library
+First of all, you have to add the library as a bower dependency:
 ```
+bower i KanoComputing/kano-api-client.git --save
+```
+Then import and initialize it like this:
+```js
+import ApiClient from '../../bower_components/kano-api-client/kano-api-client.js';
+
+const API = ApiClient({
+    defaultUrl: Config.WORLD_URL,
+    resolve: true,
+    log: true,
+});
+```
+
 Assign the API to a variable including the settings. The settings options are our worldUrl,resolve and log
 
 worldUrl: The URL of the API you are querying.

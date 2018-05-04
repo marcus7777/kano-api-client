@@ -1,21 +1,5 @@
 # Accounts and Authentication
 
-## Add and import the library
-First of all, you have to add the library as a bower dependency:
-```
-bower i KanoComputing/kano-api-client.git --save
-```
-Then import and initialize it like this:
-```js
-import ApiClient from '../../bower_components/kano-api-client/kano-api-client.js';
-
-const API = ApiClient({
-    defaultUrl: Config.WORLD_URL,
-    resolve: true,
-    log: true,
-});
-```
-
 ## Get only the data you need
 You can ask for each field you want to return, inside 'populate', in these calls:
 
