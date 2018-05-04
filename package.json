@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "install": "bomer up",
+    "install": "bower up",
     "test": "polymer test",
     "lint": "./node_modules/.bin/eslint --fix api-client.js --global localStorage --global crypto --global performance --global Gun --global fetch"
   },
