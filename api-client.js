@@ -576,11 +576,12 @@ export default function (settings) {
         if (localToken) {
           const ls = localStorage
           return encryptString(localToken, ls.getItem('user')).then((encrypted) => {
-            sha256(ls.user.username).then((userSHA) => {
-              ls.setItem(arrayToBase64(userSHA), ab2str(encrypted))
+            return sha256(ls.user.username).then((userSHA) => {
+              ls.setItem(arrayToBase64(userSHA), encrypted)
               ls.removeItem('user')
             })
-            API.isLoggedIn = false
+          }).then(() => {
+            return API.isLoggedIn = false
           }).catch((err) => {
             console.error(err)
           })

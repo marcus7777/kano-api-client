@@ -248,6 +248,7 @@ suite('client user', () => {
     }).then(() => {
       return API.logout()
     }).then(() => {
+      assert.equal(!!localStorage.getItem("47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU="), true)
       return assert.equal(API.isLoggedIn, false)
     })
   })
