@@ -76,7 +76,7 @@ export default function (settings) {
       throw new Error("no query")
     }
     return new Promise((resolve, reject) => {
-      const loggedInUser = JSON.parse(localStorage.getItem('user'))
+      const loggedInUser = JSON.parse(ls.getItem('user') || "null")
       let queryRun = query
       if (loggedInUser) {
         if (query === 'user._accessToken') {
