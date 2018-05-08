@@ -1,6 +1,6 @@
 {
   "name": "kano-api-client",
-  "main": "api-client.js",
+  "main": "kano-api-client.js",
   "dependencies": {
     "gun": "#master",
     "polymer": "Polymer/polymer#^2.0.0"
