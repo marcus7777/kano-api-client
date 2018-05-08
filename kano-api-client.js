@@ -1,4 +1,4 @@
-import '/bower_components/gun/gun.js'
+import '../../bower_components/gun/gun.js'
 export default function (settings) {
   if (!settings) throw new Error('settings are needed eg. client({defaultUrl:\'./fakeApi\'})')
   let ls = localStorage
