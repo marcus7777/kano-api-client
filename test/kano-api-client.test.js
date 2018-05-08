@@ -1,4 +1,4 @@
-import client from '../api-client.js'
+import client from '../kano-api-client.js'
 
 suite('client base', () => {
   test('client throws if no settings', () => {
