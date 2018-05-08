@@ -603,8 +603,11 @@ export default function (settings) {
         }).catch((err) => {
           console.error(err)
         })
-      } else {
-        return API.isLoggedIn = false
+      } else { // not logged in
+        return new Promise((resolve) => {
+          resolve(false)
+          return
+        })
       }
     }
   }
