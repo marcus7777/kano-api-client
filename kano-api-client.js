@@ -1,8 +1,12 @@
 import '/bower_components/gun/gun.js'
 export default function (settings) {
+  let ls = localStorage
+  if (settings.localStorage) {
+    ls = settings.localStorage
+  }
   if (!settings) throw new Error('settings are needed eg. client({defaultUrl:\'./fakeApi\'})')
   if (!settings.defaultUrl) throw new Error('defaultUrl is needed eg. client({defaultUrl:\'./fakeApi\'})')
-  const initialStateLoggedInUser = localStorage.getItem('user')
+  const initialStateLoggedInUser = ls.getItem('user')
   let initialStateUser = false
   if (initialStateLoggedInUser) {
     initialStateUser = initialStateLoggedInUser.username
@@ -156,7 +160,7 @@ export default function (settings) {
     }))
   }
   function setter (query, valueToSet) {
-    const loggedInUser = JSON.parse(localStorage.getItem('user'))
+    const loggedInUser = JSON.parse(ls.getItem('user'))
     let theQuery = query
     if (loggedInUser) {
       if (query.startsWith('user.') || query === 'user') {
@@ -206,7 +210,7 @@ export default function (settings) {
     })
   }
   function renewToken () {
-    const user = JSON.parse(localStorage.getItem('user'))
+    const user = JSON.parse(ls.getItem('user'))
     if (user && user.renew < Date.now() && user._accessToken) {
       onIdle(1000, 10).then(() => {
         return getDataFromServer('accounts/auth/refresh').then((res) => {
@@ -217,8 +221,8 @@ export default function (settings) {
             const token = res.data.token
             const duration = res.data.duration
             const renew = Date.now() + ((duration / 2) * 1000)
-            const lUser = localStorage.user
-            localStorage.setItem(
+            const lUser = ls.user
+            ls.setItem(
               'user',
               JSON.stringify(Object.assign(lUser, {
                 _accessToken: token,
@@ -335,11 +339,11 @@ export default function (settings) {
     }).then((key) => {
       return sha256(username).then((userSHA) => {
         const userHash = arrayToBase64(userSHA)
-        const data = localStorage.getItem(userHash)
-        const iv = localStorage.getItem(userHash+"iv")
+        const data = ls.getItem(userHash)
+        const iv = ls.getItem(userHash+"iv")
         if (data) {
-          localStorage.removeItem(userHash)
-          localStorage.removeItem(userHash+"iv")
+          ls.removeItem(userHash)
+          ls.removeItem(userHash+"iv")
           window.crypto.subtle.decrypt(
             {
               name: 'AES-CBC',
@@ -350,7 +354,7 @@ export default function (settings) {
           ).then((decrypted) => {
             // TODO put ES-CBC
             // as no initial Factor I need to chop off the first 8 characters
-            localStorage.setItem('user', ab2str(decrypted).slice(8))
+            ls.setItem('user', ab2str(decrypted).slice(8))
           }).catch((err) => {
             console.error(err)
           })
@@ -407,12 +411,12 @@ export default function (settings) {
       }
     },
     create: (args) => {
-      const loggedInUser = localStorage.getItem('user')
+      const loggedInUser = ls.getItem('user')
       if (args.params.user && !loggedInUser) {
         const argUser = args.params.user
         return sha256(argUser.username).then((hash) => {
           const userHash = arrayToBase64(hash)
-          if (localStorage.getItem(userHash)) {
+          if (ls.getItem(userHash)) {
             throw new Error('User already exists')
           } else if (argUser.username && argUser.password && argUser.email) {
             if (!argUser.erole) { argUser.erole = 'notset' }
@@ -436,9 +440,9 @@ export default function (settings) {
                     user.username,
                     args.params.user.password
                   ).then((localToken) => {
-                    localStorage.setItem(
+                    ls.setItem(
                       'user',
-                      JSON.stringify(Object.assign(localStorage.user || {}, {
+                      JSON.stringify(Object.assign(ls.user || {}, {
                         renew,
                         userHash,
                         _accessToken: token,
@@ -528,7 +532,7 @@ export default function (settings) {
           return makeLocalToken(args.params.user.username.toLowerCase(), args.params.user.password).then((localToken) => { 
             return sha256(args.params.user.username).then((userHashAb) => {
               const userHash = arrayToBase64(userHashAb)
-              const encryptedData = localStorage.getItem(userHash)  
+              const encryptedData = ls.getItem(userHash)  
               if (!encryptedData) { 
                 return poster(args.params.user, 'accounts/auth').then((res) => {
                   const token = res.data.token
@@ -537,7 +541,7 @@ export default function (settings) {
 
                   API.isLoggedIn = args.params.user.username
 
-                  localStorage.setItem('user', JSON.stringify({
+                  ls.setItem('user', JSON.stringify({
                     mapTo: `users.${args.params.user.username}`,
                     username: args.params.user.username,
                     _localToken: localToken, // to encrypt with when logged out
@@ -551,12 +555,12 @@ export default function (settings) {
               } else {
                 const savedData = decryptString(
                   localToken,
-                  localStorage.getItem(userHash),
-                  localStorage.getItem(userHash+"iv")
+                  ls.getItem(userHash),
+                  ls.getItem(userHash+"iv")
                 )
-                localStorage.removeItem(userHash),
-                localStorage.removeItem(userHash+"iv")
-                localStorage.setItem('user', savedData)
+                ls.removeItem(userHash),
+                ls.removeItem(userHash+"iv")
+                ls.setItem('user', savedData)
                 return API.read({ populate: args.populate })
               }
             })
@@ -586,7 +590,6 @@ export default function (settings) {
       if (API.isLoggedIn) {
         return getter('user._localToken').then((localToken) => {
           if (localToken) {
-            const ls = localStorage
             const iv = window.crypto.getRandomValues(new Uint8Array(16)).toString()
             return encryptString(localToken, ls.getItem('user'), iv).then((encrypted) => {
               return sha256(API.isLoggedIn).then((userSHA) => {
