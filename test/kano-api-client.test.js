@@ -1,4 +1,6 @@
-import client from '../kano-api-client.js'
+import client from '../kano-api-client.js';
+
+const fakeApiUrl = './fakeApi/';
 
 let ls = {
   _data       : {},
@@ -25,19 +27,19 @@ suite('client base', () => {
   });
   test("client loads if client({defaultUrl:'./fakeApi'})" , () => {
     var API = client({
-      defaultUrl:'./fakeApi'
+      defaultUrl: fakeApiUrl
     })
     assert.ok(API) 
   });
   test("make sure there is no user logged in yet" , () => {
     var API = client({
-      defaultUrl:'./fakeApi'
+      defaultUrl: fakeApiUrl
     })
     assert.equal(API.isLoggedIn, false) 
   });
   test("has username been not taken", () => {
     var API = client({
-      defaultUrl:'./fakeApi',
+      defaultUrl: fakeApiUrl,
       getDataFromServer: () => {
         return new Promise((resolve) => {
           resolve({data:"false"})
@@ -51,7 +53,7 @@ suite('client base', () => {
   })
   test("has username been taken", () => {
     var API = client({
-      defaultUrl:'./fakeApi',
+      defaultUrl: fakeApiUrl,
       getDataFromServer: () => {
         return new Promise((resolve) => {
           resolve({data:"true"})
@@ -65,7 +67,7 @@ suite('client base', () => {
   })
   test("forgotUsername for a no email", () => {
     var API = client({
-      defaultUrl:'./fakeApi',
+      defaultUrl: fakeApiUrl,
     })
     try {
       API.forgotUsername({
@@ -80,7 +82,7 @@ suite('client base', () => {
   })
   test("forgotUsername for a valid email", () => {
     var API = client({
-      defaultUrl:'./fakeApi',
+      defaultUrl: fakeApiUrl,
       poster: function() {
         return new Promise(function(resolve, reject) { 
           resolve({
@@ -102,7 +104,7 @@ suite('client base', () => {
   })
   test("forgotUsername for a invalid email", () => {
     var API = client({
-      defaultUrl:'./fakeApi/',
+      defaultUrl: fakeApiUrl,
     })
     try {
       API.forgotUsername({
@@ -118,7 +120,7 @@ suite('client base', () => {
   })
   test("forgotPassword for a no username", () => {
     var API = client({
-      defaultUrl:'./fakeApi'
+      defaultUrl: fakeApiUrl,
     })
     try {
       API.forgotPassword({
@@ -133,7 +135,7 @@ suite('client base', () => {
   })
   test("forgotPassword for a valid username", () => {
     var API = client({
-      defaultUrl:'./fakeApi',
+      defaultUrl: fakeApiUrl,
       poster: function() {
         return new Promise(function(resolve, reject) { 
           resolve({
@@ -154,7 +156,7 @@ suite('client base', () => {
   })
   test("forgotPassword for a invalid username", () => {
     var API = client({
-      defaultUrl:'./fakeApi/',
+      defaultUrl: fakeApiUrl,
       poster: function() {
         return new Promise(function(resolve, reject) { 
           reject()
@@ -185,7 +187,7 @@ suite('client user', () => {
   test("can a user be created",() => {
     localStorage.clear()
     var API = client({
-      defaultUrl:'./fakeApi/',
+      defaultUrl: fakeApiUrl,
       poster: function() {
         return new Promise(function(resolve) { 
           resolve(JSON.parse(`{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}`)
@@ -211,7 +213,7 @@ suite('client user', () => {
   test("user is logged in",() => {
     localStorage.clear()
     var API = client({
-      defaultUrl:'./fakeApi/',
+      defaultUrl: fakeApiUrl,
       poster: () => {
         return new Promise((resolve) => {
           resolve(JSON.parse(`{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}`))
@@ -238,7 +240,7 @@ suite('client user', () => {
     localStorage.clear()
 
     var API = client({
-      defaultUrl:'./fakeApi/',
+      defaultUrl: fakeApiUrl,
       poster: () => {
         return new Promise((resolve) => {
           resolve(JSON.parse(`{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}`))
@@ -268,7 +270,7 @@ suite('client user', () => {
     localStorage.clear()
 
     var API = client({
-      defaultUrl:'./fakeApi/',
+      defaultUrl: fakeApiUrl,
     })
     API.logout().then(() => {
       return assert.equal(API.isLoggedIn, false)
@@ -279,7 +281,7 @@ suite('client user', () => {
     ls.setItem(hashOfName+"iv","136,179,253,164,23,155,253,237,52,133,22,146,93,125,19,237")
 
     var API = client({
-      defaultUrl:'./fakeApi/',
+      defaultUrl: fakeApiUrl,
       poster: () => {
         throw new Error('offline')
       },
