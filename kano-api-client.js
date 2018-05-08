@@ -72,11 +72,11 @@ export default function (settings) {
     getDataFromServer = settings.getDataFromServer
   }
   function getter (query, params, sync) {
-    if (!query || query === "undefined") {
-      throw new Error("no query")
+    if (!query || query === 'undefined') {
+      throw new Error('no query')
     }
     return new Promise((resolve, reject) => {
-      const loggedInUser = JSON.parse(ls.getItem('user') || "null")
+      const loggedInUser = JSON.parse(ls.getItem('user') || 'null')
       let queryRun = query
       if (loggedInUser) {
         if (query === 'user._accessToken') {
@@ -134,10 +134,8 @@ export default function (settings) {
                 })
               }).then(() => {
                 resolve(ifArray(gunData))
-                return
               }).catch((e) => {
                 reject(e)
-                return
               })
             }
           }
@@ -160,7 +158,7 @@ export default function (settings) {
     }))
   }
   function setter (query, valueToSet) {
-    const loggedInUser = JSON.parse(ls.getItem('user') || "null")
+    const loggedInUser = JSON.parse(ls.getItem('user') || 'null')
     let theQuery = query
     if (loggedInUser) {
       if (query.startsWith('user.') || query === 'user') {
@@ -221,7 +219,7 @@ export default function (settings) {
             const token = res.data.token
             const duration = res.data.duration
             const renew = Date.now() + ((duration / 2) * 1000)
-            const lUser = ls.getItem("user") || {}
+            const lUser = ls.getItem('user') || {}
             ls.setItem(
               'user',
               JSON.stringify(Object.assign(lUser, {
@@ -305,7 +303,7 @@ export default function (settings) {
   }
   function encryptString (localToken, data, ivAsString) {
     return keyFromLocalToken(localToken).then((key) => {
-      const iv = new Uint8Array(ivAsString.split(","))
+      const iv = new Uint8Array(ivAsString.split(','))
       return window.crypto.subtle.encrypt({
         name: 'AES-CBC',
         iv
@@ -316,8 +314,8 @@ export default function (settings) {
   }
   function decryptString (localToken, data, ivAsString) {
     return keyFromLocalToken(localToken).then((key) => {
-      var iv = new Uint8Array(ivAsString.split(","))
-      
+      var iv = new Uint8Array(ivAsString.split(','))
+
       return window.crypto.subtle.decrypt(
         {
           name: 'AES-CBC',
@@ -340,14 +338,14 @@ export default function (settings) {
       return sha256(username).then((userSHA) => {
         const userHash = arrayToBase64(userSHA)
         const data = ls.getItem(userHash)
-        const iv = ls.getItem(userHash+"iv")
+        const iv = ls.getItem(userHash + 'iv')
         if (data) {
           ls.removeItem(userHash)
-          ls.removeItem(userHash+"iv")
+          ls.removeItem(userHash + 'iv')
           window.crypto.subtle.decrypt(
             {
               name: 'AES-CBC',
-              iv: new Uint8Array(iv.split(","))
+              iv: new Uint8Array(iv.split(','))
             },
             key, // from generateKey or importKey above
             base64ToArrayBuffer(data) // ArrayBuffer of the data
@@ -357,7 +355,6 @@ export default function (settings) {
             return ls.setItem('user', ab2str(decrypted).slice(8))
           }).then(() => {
             API.isLoggedIn = JSON.parse(ls.getItem('user')).username
-            return 
           }).catch((err) => {
             console.error(err)
           })
@@ -432,9 +429,9 @@ export default function (settings) {
                 const token = res.data.token
                 const duration = res.data.duration
                 const renew = Date.now() + ((duration / 2) * 1000)
-                const user = Object.assign({ 
-                  username: args.params.user.username,
-                },res.data.user)
+                const user = Object.assign({
+                  username: args.params.user.username
+                }, res.data.user)
 
                 if (user.username) {
                   API.isLoggedIn = args.params.user.username
@@ -450,7 +447,7 @@ export default function (settings) {
                         userHash,
                         _accessToken: token,
                         _localToken: localToken,
-                        mapTo: "users." + user.username,
+                        mapTo: 'users.' + user.username,
                         username: user.username
                       }))
                     )
@@ -532,8 +529,8 @@ export default function (settings) {
           if (!args.params.user.password) {
             throw new Error("need a password e.g. username: 'marcus7777', password: 'monkey123'")
           }
-          return makeLocalToken(args.params.user.username.toLowerCase(), args.params.user.password).then((localToken) => { 
-            if (!ls.getItem("user")) { 
+          return makeLocalToken(args.params.user.username.toLowerCase(), args.params.user.password).then((localToken) => {
+            if (!ls.getItem('user')) {
               return poster(args.params.user, 'accounts/auth').then((res) => {
                 const token = res.data.token
                 const duration = res.data.duration
@@ -583,7 +580,7 @@ export default function (settings) {
             const iv = window.crypto.getRandomValues(new Uint8Array(16)).toString()
             return encryptString(localToken, ls.getItem('user'), iv).then((encrypted) => {
               return sha256(API.isLoggedIn).then((userSHA) => {
-                ls.setItem(arrayToBase64(userSHA)+"iv", iv)
+                ls.setItem(arrayToBase64(userSHA) + 'iv', iv)
                 ls.setItem(arrayToBase64(userSHA), encrypted)
                 ls.removeItem('user')
               })
@@ -599,7 +596,6 @@ export default function (settings) {
       } else { // not logged in
         return new Promise((resolve) => {
           resolve(false)
-          return
         })
       }
     }
