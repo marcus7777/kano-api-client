@@ -1,6 +1,6 @@
-import client from '../kano-api-client.js';
+import client from '../kano-api-client.js'
 
-const fakeApiUrl = './fakeApi/';
+const fakeApiUrl = './fakeApi/'
 
 let ls = {
   _data: {},
@@ -42,7 +42,7 @@ suite('client base', () => {
       defaultUrl: fakeApiUrl,
       getDataFromServer: () => {
         return new Promise((resolve) => {
-          resolve({data: 'false'})
+          resolve({ data: 'false' })
         })
       }
     })
@@ -56,7 +56,7 @@ suite('client base', () => {
       defaultUrl: fakeApiUrl,
       getDataFromServer: () => {
         return new Promise((resolve) => {
-          resolve({data: 'true'})
+          resolve({ data: 'true' })
         })
       }
     })
@@ -67,7 +67,7 @@ suite('client base', () => {
   })
   test('forgotUsername for a no email', () => {
     var API = client({
-      defaultUrl: fakeApiUrl,
+      defaultUrl: fakeApiUrl
     })
     try {
       API.forgotUsername({
@@ -83,8 +83,8 @@ suite('client base', () => {
   test('forgotUsername for a valid email', () => {
     var API = client({
       defaultUrl: fakeApiUrl,
-      poster: function() {
-        return new Promise(function(resolve, reject) { 
+      poster: function () {
+        return new Promise(function (resolve, reject) {
           resolve({
             data: 'true'
           })
@@ -103,7 +103,7 @@ suite('client base', () => {
   })
   test('forgotUsername for a invalid email', () => {
     var API = client({
-      defaultUrl: fakeApiUrl,
+      defaultUrl: fakeApiUrl
     })
     try {
       API.forgotUsername({
@@ -119,7 +119,7 @@ suite('client base', () => {
   })
   test('forgotPassword for a no username', () => {
     var API = client({
-      defaultUrl: fakeApiUrl,
+      defaultUrl: fakeApiUrl
     })
     try {
       API.forgotPassword({
@@ -135,8 +135,8 @@ suite('client base', () => {
   test('forgotPassword for a valid username', () => {
     var API = client({
       defaultUrl: fakeApiUrl,
-      poster: function() {
-        return new Promise(function(resolve, reject) { 
+      poster: function () {
+        return new Promise(function (resolve, reject) {
           resolve({
             data: 'true'
           })
@@ -156,8 +156,8 @@ suite('client base', () => {
   test('forgotPassword for a invalid username', () => {
     var API = client({
       defaultUrl: fakeApiUrl,
-      poster: function() {
-        return new Promise(function(resolve, reject) { 
+      poster: function () {
+        return new Promise(function (resolve, reject) {
           reject()
         })
       }
@@ -187,8 +187,8 @@ suite('client user', () => {
     localStorage.clear()
     var API = client({
       defaultUrl: fakeApiUrl,
-      poster: function() {
-        return new Promise(function(resolve) { 
+      poster: function () {
+        return new Promise(function (resolve) {
           resolve(JSON.parse(`{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}`)
           )
         })
@@ -269,7 +269,7 @@ suite('client user', () => {
     localStorage.clear()
 
     var API = client({
-      defaultUrl: fakeApiUrl,
+      defaultUrl: fakeApiUrl
     })
     API.logout().then(() => {
       return assert.equal(API.isLoggedIn, false)
