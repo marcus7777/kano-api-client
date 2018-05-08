@@ -1,10 +1,10 @@
 import '/bower_components/gun/gun.js'
 export default function (settings) {
+  if (!settings) throw new Error('settings are needed eg. client({defaultUrl:\'./fakeApi\'})')
   let ls = localStorage
   if (settings.localStorage) {
     ls = settings.localStorage
   }
-  if (!settings) throw new Error('settings are needed eg. client({defaultUrl:\'./fakeApi\'})')
   if (!settings.defaultUrl) throw new Error('defaultUrl is needed eg. client({defaultUrl:\'./fakeApi\'})')
   const initialStateLoggedInUser = ls.getItem('user')
   let initialStateUser = false
@@ -160,7 +160,7 @@ export default function (settings) {
     }))
   }
   function setter (query, valueToSet) {
-    const loggedInUser = JSON.parse(ls.getItem('user'))
+    const loggedInUser = JSON.parse(ls.getItem('user') || "null")
     let theQuery = query
     if (loggedInUser) {
       if (query.startsWith('user.') || query === 'user') {
@@ -221,7 +221,7 @@ export default function (settings) {
             const token = res.data.token
             const duration = res.data.duration
             const renew = Date.now() + ((duration / 2) * 1000)
-            const lUser = ls.user
+            const lUser = ls.getItem("user") || {}
             ls.setItem(
               'user',
               JSON.stringify(Object.assign(lUser, {
@@ -350,11 +350,14 @@ export default function (settings) {
               iv: new Uint8Array(iv.split(","))
             },
             key, // from generateKey or importKey above
-            str2ab(data) // ArrayBuffer of the data
+            base64ToArrayBuffer(data) // ArrayBuffer of the data
           ).then((decrypted) => {
             // TODO put ES-CBC
             // as no initial Factor I need to chop off the first 8 characters
-            ls.setItem('user', ab2str(decrypted).slice(8))
+            return ls.setItem('user', ab2str(decrypted).slice(8))
+          }).then(() => {
+            API.isLoggedIn = JSON.parse(ls.getItem('user')).username
+            return 
           }).catch((err) => {
             console.error(err)
           })
@@ -530,40 +533,27 @@ export default function (settings) {
             throw new Error("need a password e.g. username: 'marcus7777', password: 'monkey123'")
           }
           return makeLocalToken(args.params.user.username.toLowerCase(), args.params.user.password).then((localToken) => { 
-            return sha256(args.params.user.username).then((userHashAb) => {
-              const userHash = arrayToBase64(userHashAb)
-              const encryptedData = ls.getItem(userHash)  
-              if (!encryptedData) { 
-                return poster(args.params.user, 'accounts/auth').then((res) => {
-                  const token = res.data.token
-                  const duration = res.data.duration
-                  const renew = Date.now() + ((duration / 2) * 1000)
+            if (!ls.getItem("user")) { 
+              return poster(args.params.user, 'accounts/auth').then((res) => {
+                const token = res.data.token
+                const duration = res.data.duration
+                const renew = Date.now() + ((duration / 2) * 1000)
 
-                  API.isLoggedIn = args.params.user.username
+                API.isLoggedIn = args.params.user.username
 
-                  ls.setItem('user', JSON.stringify({
-                    mapTo: `users.${args.params.user.username}`,
-                    username: args.params.user.username,
-                    _localToken: localToken, // to encrypt with when logged out
-                    _accessToken: token, // to access server
-                    userHash,
-                    renew
-                  }))
-                }).then(() => {
-                  return API.read({ populate: args.populate })
-                })
-              } else {
-                const savedData = decryptString(
-                  localToken,
-                  ls.getItem(userHash),
-                  ls.getItem(userHash+"iv")
-                )
-                ls.removeItem(userHash),
-                ls.removeItem(userHash+"iv")
-                ls.setItem('user', savedData)
+                ls.setItem('user', JSON.stringify({
+                  mapTo: `users.${args.params.user.username}`,
+                  username: args.params.user.username,
+                  _localToken: localToken, // to encrypt with when logged out
+                  _accessToken: token, // to access server
+                  renew
+                }))
+              }).then(() => {
                 return API.read({ populate: args.populate })
-              }
-            })
+              })
+            } else {
+              return API.read({ populate: args.populate })
+            }
           }).catch((err) => {
             console.error(err)
 
