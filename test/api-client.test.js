@@ -169,8 +169,10 @@ suite('client base', () => {
   })
 })
 suite('client user', () => {
-  var name = "test" + (Math.random()+"").replace(".","")
-  var password = "342340bab5uxexeuee4"
+  var name = "testing"
+  var hashOfName = "z4DNiu1ILV0VJ9fccvzv+E5jJlkoSER9LcCw6H38mpA="
+  var password = "m0nk3y123"
+  var keyFromNameAndPassword = "U2E8RFhyMWpvho4pDlB3q-9smxdWU_WzVj_Tc1aDC7Y"
 
   test("can a user be created",() => {
     localStorage.clear()
@@ -226,6 +228,7 @@ suite('client user', () => {
   })
   test("user is logged in and out",() => {
     localStorage.clear()
+
     var API = client({
       defaultUrl:'./fakeApi/',
       poster: () => {
@@ -249,8 +252,32 @@ suite('client user', () => {
     }).then(() => {
       return API.logout()
     }).then(() => {
-      assert.ok(localStorage.getItem("47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU="), "not save encryptString")
+      assert.ok(localStorage.getItem(hashOfName), "not save encryptString")
       return assert.equal(API.isLoggedIn, false)
+    })
+  })
+  test("user is logged in if off-line",() => {
+    localStorage.setItem(hashOfName,"yVisPTCz+wN8WRQQQjgizfnYgQooVsZHs0ehfAcVplUWgjyUJRsoffZKZiA+/jTxey+rnbpfYxG5kPdQHuhsiA9c275fWZO5JsvPbK43Pqh2xdBMqrjoZ8x0Tr85BeFjr0zKSUh5LxLU9W4Lhnqu4FL//wePrnUb7K4rAb1tjqIWhITa8oELRTqxQKjK6u5WyanQ/QfNCbFGeiOtnZ9zQ4APjFIpftSNAMAyS2c4645Qsrxk3/Sb8nxnFUzt5QXH1PZeQGk7fOUMwC4DtX/f6Vg/3EkN49j+USDH4dZtJBkAWYDzOsgbz9Knl/1mca2waD7BOGPhvt+87miEfFNMbVU4k9yVNOYX1kqTKz1+f8Ra0h9IbieHnheWlHnFzkInyW0o87BaeDSz4wKIJi0CXsl09BneBfo9noJG+oRsqhN5lSolGsJ9+C0GVd4ZZDSlTjP2F0TBp/b+iAGYiZnh20XmBngWyvNohUgEpKevm8UtqGq+cfDLwlqbIk26rIpjhM/0lw6E3BEJY+TCUZr0QJc7VB5lsaIgEJu7RyHyfIpYeUOHbykNEapTjIYSh7l5+mWZPs8W0Q4nPmEgOkLyjw51wlDaUGKyFh5QX21Akjp9PvQACKSClbxLXbNRmmg6kf3zrYxusJFjNeSfgWD96SOQHJF8M6GD6aEyn0WllBYa9/PgwL24CS3j1xvRujB95y607dIHKtIDUcIjqw2ngEFPsZ1HFMq0uS46EIdHiRN/+RhAQ36vkvl+KFPT/xlJQVY4DL/u/ztTM+zYvN5uIw8cXMaIooBJcA/TfA46LRrJgTuln/NIkIJnraX1A6A3ZuS3z67R6Gs84gXhSm3V7ykoJa/4hJDqiN5K1UsomLE8BziTnxg69e5nQY8j6D80ojoEMJX8lhEuAS3MEpQKgVq0lHT/VyfS4lxTstOO6y4QIh0H+n6Xuf91Y3tW6gxy21ZTd0sZaEINIImOBlOwKSj6dMqKn4fZgz5FRVkpY1XOsEG6kyX5osVlwlKkJY/P7v4lmIstvAtcaGwS6a/VuPaQch6YvN4mGi7qWHwcNKg=")
+    localStorage.setItem(hashOfName+"iv","103,183,10,108,1,183,119,133,4,7,122,221,35,156,167,214")
+    var API = client({
+      defaultUrl:'./fakeApi/',
+      poster: () => {
+        throw new Error('offline')
+      },
+      getDataFromServer: () => {
+        throw new Error('offline')
+      },
+    })
+    return API.login({
+      params: {
+        user: {
+          username: name,
+          password,
+        }
+      }    
+    }).then(() => {
+      assert.ok(localStorage.getItem("user"), "not load decrypted user")
+      return assert.equal(API.isLoggedIn, name)
     })
   })
 
