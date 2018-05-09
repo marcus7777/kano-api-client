@@ -311,9 +311,6 @@ suite('client base', () => {
     test('has username been not taken', () => {
         const API = client({
             defaultUrl: realApiUrl,
-            getDataFromServer: () => new Promise((resolve) => {
-                resolve({ data: 'false' });
-            }),
         });
         const query = 'users.marcus7778';
         API.check(query).then((exists) => {
@@ -323,9 +320,6 @@ suite('client base', () => {
     test('has username been taken', () => {
         const API = client({
             defaultUrl: realApiUrl,
-            getDataFromServer: () => new Promise((resolve) => {
-                resolve({ data: 'true' });
-            }),
         });
         const query = 'users.marcus7777';
         API.check(query).then((exists) => {
@@ -350,13 +344,6 @@ suite('client base', () => {
     test('forgotUsername for a valid email', () => {
         const API = client({
             defaultUrl: realApiUrl,
-            poster() {
-                return new Promise(((resolve, reject) => {
-                    resolve({
-                        data: 'true',
-                    });
-                }));
-            },
         });
         API.forgotUsername({
             params: {
@@ -402,13 +389,6 @@ suite('client base', () => {
     test('forgotPassword for a valid username', () => {
         const API = client({
             defaultUrl: realApiUrl,
-            poster() {
-                return new Promise(((resolve, reject) => {
-                    resolve({
-                        data: 'true',
-                    });
-                }));
-            },
         });
         API.forgotPassword({
             params: {
@@ -423,11 +403,6 @@ suite('client base', () => {
     test('forgotPassword for a invalid username', () => {
         const API = client({
             defaultUrl: realApiUrl,
-            poster() {
-                return new Promise(((resolve, reject) => {
-                    reject();
-                }));
-            },
         });
         try {
             API.forgotPassword({
@@ -455,12 +430,6 @@ suite('client user', () => {
         localStorage.clear();
         const API = client({
             defaultUrl: realApiUrl,
-            poster() {
-                return new Promise(((resolve) => {
-                    resolve(JSON.parse('{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}'),
-                    );
-                }));
-            },
         });
         return API.create({
             params: {
@@ -481,12 +450,6 @@ suite('client user', () => {
         localStorage.clear();
         const API = client({
             defaultUrl: realApiUrl,
-            poster: () => new Promise((resolve) => {
-                resolve(JSON.parse('{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}'));
-            }),
-            getDataFromServer: () => new Promise((resolve) => {
-                resolve(JSON.parse('{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}'));
-            }),
         });
         return API.login({
             params: {
@@ -504,12 +467,6 @@ suite('client user', () => {
 
         const API = client({
             defaultUrl: realApiUrl,
-            poster: () => new Promise((resolve) => {
-                resolve(JSON.parse('{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}'));
-            }),
-            getDataFromServer: () => new Promise((resolve) => {
-                resolve(JSON.parse('{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}'));
-            }),
         });
         return API.login({
             params: {
