@@ -295,7 +295,7 @@ suite('client user', () => {
 
 // START tests with real API
 
-suite('client base', () => {
+suite('client base real', () => {
     test("client loads if client({defaultUrl:realApiUrl)", () => {
         const API = client({
             defaultUrl: realApiUrl,
@@ -420,7 +420,7 @@ suite('client base', () => {
     });
 });
 
-suite('client user', () => {
+suite('client user real', () => {
     const name = 'testing';
     const hashOfName = 'z4DNiu1ILV0VJ9fccvzv+E5jJlkoSER9LcCw6H38mpA=';
     const password = 'm0nk3y123';
