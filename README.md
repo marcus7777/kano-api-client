@@ -1,5 +1,3 @@
-[![js-standard-style](https://cdn.rawgit.com/standard/standard/master/badge.svg)](http://standardjs.com)
-
 [![Build Status](https://travis-ci.org/marcus7777/kano-api-client.svg?branch=master)](https://travis-ci.org/marcus7777/kano-api-client)
 
 ## Add and import the library
