@@ -185,7 +185,7 @@ export default function (settings) {
             .then(() => {
                 if (oldValue !== undefined || JSON.stringify(newValue) !== JSON.stringify(oldValue)) {
                     if (settings.log) { console.log('needs sync', newValue); }
-                // TODO add to postList
+                    // TODO add to postList
                 }
             })
             .then(() => {
@@ -272,7 +272,7 @@ export default function (settings) {
         poster = settings.poster;
     }
     function sha256(str) {
-    // We transform the string into an arraybuffer.
+        // We transform the string into an arraybuffer.
         const buffer = new TextEncoder('utf-8').encode(str);
         return crypto.subtle.digest('SHA-256', buffer).then((hash) => {
             return hash;
