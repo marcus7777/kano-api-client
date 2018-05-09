@@ -5,9 +5,7 @@ node_js:
 
 sudo: required
 addons:
-  chrome: stable
-  
-install: travis_wait mvn install
+  chrome: stable 
 
 script:
-  - travis_wait npm test
+  - npm test
