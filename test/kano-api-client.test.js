@@ -82,8 +82,8 @@ suite('client base', () => {
             poster() {
                 return new Promise(((resolve, reject) => {
                     resolve({
-                        data: 'true'
-                    })
+                        data: 'true',
+                    });
                 }));
             },
         });
@@ -134,8 +134,8 @@ suite('client base', () => {
             poster() {
                 return new Promise(((resolve, reject) => {
                     resolve({
-                        data: 'true'
-                    })
+                        data: 'true',
+                    });
                 }));
             },
         });
@@ -154,7 +154,7 @@ suite('client base', () => {
             defaultUrl: fakeApiUrl,
             poster() {
                 return new Promise(((resolve, reject) => {
-                    reject()
+                    reject();
                 }));
             },
         });
@@ -185,8 +185,8 @@ suite('client user', () => {
             defaultUrl: fakeApiUrl,
             poster() {
                 return new Promise(((resolve) => {
-                    resolve(JSON.parse(`{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}`)
-                    )
+                    resolve(JSON.parse('{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}'),
+                    );
                 }));
             },
         });
