@@ -25,9 +25,9 @@ resolve: If result is true all populated Returns will be their values otherwise 
 log: if you can't work out what's going on set this.
 ```js
 const API = window.Kano.apiClient({
-  worldUrl:"http://ksworldapi-dev.us-west-1.elasticbeanstalk.com",
-  resolve:true,
-  log:true,
+    worldUrl: 'http://ksworldapi-dev.us-west-1.elasticbeanstalk.com',
+    resolve: true,
+    log: true,
 })
 ```
 
@@ -40,39 +40,40 @@ here's an example with `login`.
 
 ```js
 API.Create({
-{params:{
-  user:{ 
-    username:"bananabanana2", 
-    password:".x&6,-U7ZG&`}c?h",
-    email:"bb@kano.me"
-  },
-  populate:{
-    id:"user.id"
-  }
+    params: {
+        user: { 
+            username:"bananabanana2", 
+            password:".x&6,-U7ZG&`}c?h",
+            email:"bb@kano.me"
+        },
+        populate: {
+            id:"user.id"
+        }
+    }
 }) == {id:"123456789aoeuidhtn"}
 ```
 or
 ```js
 API.login({
-  params: {
-    username: "nectarsoft",
-    password: "Chupand0nectar",
-  },
-  populate:{
-    id: "user.id",
-    ui: {
-      followers: {
-        list: "user.followers"
-      },
-      following: {
-        list: "user.following"
-      },
-    }
-  },
+    params: {
+        username: "nectarsoft",
+        password: "Chupand0nectar",
+    },
+    populate: {
+        id: "user.id",
+        ui: {
+            followers: {
+                list: "user.followers"
+            },
+            following: {
+                list: "user.following"
+            },
+        }
+    },
 }).then(user => {
-  console.log(user)  
+    console.log(user)  
 }).catch(err => {
-  console.error(err)
+    console.error(err)
 })
 ```
 logout which doesn't take any arguments
