@@ -109,5 +109,8 @@ API.forgotPassword({
 
 ## Logout
 ```js
-API.logout();
+API.logout().then(() => {
+    // Do something when
+    // the user is logged out
+});
 ```

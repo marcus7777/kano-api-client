@@ -79,7 +79,10 @@ API.login({
 ```
 logout which doesn't take any arguments
 ```js
-API.logout()
+API.logout().then(() => {
+    // Do something when
+    // the user is logged out
+});
 ```
 ### expose value
 ```js
