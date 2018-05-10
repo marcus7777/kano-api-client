@@ -87,3 +87,26 @@ API.logout().then(() => {
 ```js
 API.isLoggedIn // false or username (if logged in)
 ```
+
+### development
+```
+git clone git@github.com:marcus7777/kano-api-client.git # TODO update URL when copying to kano
+cd kano-api-client
+```
+ 
+then run 
+```
+npm install
+npm test
+```
+now run ```polymer serve``` you might need to ```npm install polymer-cli --global``` to do that.
+
+
+
+Watch the test run on
+
+http://127.0.0.1:8081/components/kano-api-client/test/
+
+To step through the tests open the console on: 
+
+http://127.0.0.1:8081/components/kano-api-client/test/kano-api-client.test.html
