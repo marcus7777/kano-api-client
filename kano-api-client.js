@@ -52,7 +52,7 @@ export default function (settings) {
                     if (accessToken) {
                         theFetch.headers.authorization = `Bearer ${accessToken}`;
                     }
-                    fetch(`${settings.defaultUrl}/${path}`, theFetch).then((response) => {
+                    fetch(`${settings.defaultUrl}${path}`, theFetch).then((response) => {
                         return response.json();
                     }).then((dataFromServer) => {
                         if (dataFromServer !== undefined && dataFromServer !== null) {
