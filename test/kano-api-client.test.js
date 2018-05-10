@@ -11,6 +11,33 @@ const ls = {
     clear() { return this._data = {}; },
 };
 
+function calculateHashOfName(name) {
+    const hashOfName = sha256(name).then((hash) => {
+        return arrayToBase64(hash);
+    });
+
+    console.log(hashOfName);
+
+    return hashOfName;
+}
+
+function sha256(str) {
+    // We transform the string into an arraybuffer.
+    const buffer = new TextEncoder('utf-8').encode(str);
+    return crypto.subtle.digest('SHA-256', buffer).then((hash) => {
+        return hash;
+    });
+}
+
+function arrayToBase64(ab) {
+    const dView = new Uint8Array(ab); // Get a byte view
+    const arr = Array.prototype.slice.call(dView); // Create a normal array
+    const arr1 = arr.map((item) => {
+        return String.fromCharCode(item); // Convert
+    });
+    return window.btoa(arr1.join('')); // Form a string
+}
+
 // START tests with fake API
 
 suite('client base', () => {
@@ -179,113 +206,115 @@ suite('client base', () => {
 
 suite('client user', () => {
     const name = 'testing';
-    const hashOfName = 'z4DNiu1ILV0VJ9fccvzv+E5jJlkoSER9LcCw6H38mpA=';
     const password = 'm0nk3y123';
+    calculateHashOfName(name).then((res) => {
+        const hashOfName = res;
 
-    test('can a user be created', () => {
-        localStorage.clear();
-        const API = client({
-            defaultUrl: fakeApiUrl,
-            poster() {
-                return new Promise(((resolve) => {
-                    resolve(JSON.parse('{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}'),
-                    );
-                }));
-            },
-        });
-        return API.create({
-            params: {
-                user: {
-                    username: name,
-                    email: 'marcus@kano.me',
-                    password,
+        test('can a user be created', () => {
+            localStorage.clear();
+            const API = client({
+                defaultUrl: fakeApiUrl,
+                poster() {
+                    return new Promise(((resolve) => {
+                        resolve(JSON.parse('{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}'),
+                        );
+                    }));
                 },
-            },
-            populate: {
-                id: 'user.id',
-            },
-        }).then(async (user) => {
-            assert.equal(await user.id, '5ae9b582a82d9f26ec6ea2ea');
-        });
-    });
-    test('user is logged in', () => {
-        localStorage.clear();
-        const API = client({
-            defaultUrl: fakeApiUrl,
-            poster: () => new Promise((resolve) => {
-                resolve(JSON.parse('{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}'));
-            }),
-            getDataFromServer: () => new Promise((resolve) => {
-                resolve(JSON.parse('{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}'));
-            }),
-        });
-        return API.login({
-            params: {
-                user: {
-                    username: name,
-                    password,
+            });
+            return API.create({
+                params: {
+                    user: {
+                        username: name,
+                        email: 'marcus@kano.me',
+                        password,
+                    },
                 },
-            },
-        }).then(() => {
-            assert.equal(API.isLoggedIn, name);
+                populate: {
+                    id: 'user.id',
+                },
+            }).then(async (user) => {
+                assert.equal(await user.id, '5ae9b582a82d9f26ec6ea2ea');
+            });
         });
-    });
-    test('user is logged in and out', () => {
-        localStorage.clear();
+        test('user is logged in', () => {
+            localStorage.clear();
+            const API = client({
+                defaultUrl: fakeApiUrl,
+                poster: () => new Promise((resolve) => {
+                    resolve(JSON.parse('{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}'));
+                }),
+                getDataFromServer: () => new Promise((resolve) => {
+                    resolve(JSON.parse('{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}'));
+                }),
+            });
+            return API.login({
+                params: {
+                    user: {
+                        username: name,
+                        password,
+                    },
+                },
+            }).then(() => {
+                assert.equal(API.isLoggedIn, name);
+            });
+        });
+        test('user is logged in and out', () => {
+            localStorage.clear();
 
-        const API = client({
-            defaultUrl: fakeApiUrl,
-            poster: () => new Promise((resolve) => {
-                resolve(JSON.parse('{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}'));
-            }),
-            getDataFromServer: () => new Promise((resolve) => {
-                resolve(JSON.parse('{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}'));
-            }),
-        });
-        return API.login({
-            params: {
-                user: {
-                    username: name,
-                    password,
+            const API = client({
+                defaultUrl: fakeApiUrl,
+                poster: () => new Promise((resolve) => {
+                    resolve(JSON.parse('{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}'));
+                }),
+                getDataFromServer: () => new Promise((resolve) => {
+                    resolve(JSON.parse('{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}'));
+                }),
+            });
+            return API.login({
+                params: {
+                    user: {
+                        username: name,
+                        password,
+                    },
                 },
-            },
-        }).then(() => API.logout()).then(() => {
-            assert.ok(localStorage.getItem(hashOfName), 'not save encryptString');
-            return assert.equal(API.isLoggedIn, false);
+            }).then(() => API.logout()).then(() => {
+                assert.ok(localStorage.getItem(hashOfName), 'not save encryptString');
+                return assert.equal(API.isLoggedIn, false);
+            });
         });
-    });
-    test('logout should return promise', () => {
-        localStorage.clear();
+        test('logout should return promise', () => {
+            localStorage.clear();
 
-        const API = client({
-            defaultUrl: fakeApiUrl,
+            const API = client({
+                defaultUrl: fakeApiUrl,
+            });
+            API.logout().then(() => assert.equal(API.isLoggedIn, false));
         });
-        API.logout().then(() => assert.equal(API.isLoggedIn, false));
-    });
-    test('user is logged in if off-line', () => {
-        ls.setItem(hashOfName, 'xyEQklDaPj/JfcGsZ+y3WGSmmBBB30exF/Yr6Br86nkgNvvpG0aKdR3wkCyxcDDOAGhNcbLFTWLKG8ov2PPxKz95tYuLMrDa1NE9Fn9AJHVMiYHlgkWzKe+vRaUMO2YGtAZyB/y7U1lX+un8JQfauX/Az7myXeeLq6C4+YzHzTRBuE5Q3bxh1uG9mmHEwqN/cYDA87MpqiTprhMCuUpod8Ven3jpgoVnHuCLkOaUDycgJXwLnasa4PVKoCBiGICLQ/nc78uNmJuL1NgHL2pE64I42ha2+cUDKYf6Zbpzop9H4+P2HTl0v+OZYJMumYaP+iN9NWVRV+yyP7ub4fpHFJb7jyp42kN1eT4lNiq74DcUHks2kBCZunKqeJDmE+xPciql9C53AQVr5+5q/YBxgqw0oOoWeXI5pZ2nXwpn+Fuo4+mzXN414PqTD3omlIJzojCmsIC8u24ZdQxuaT3kq0NL2KxsWM3XQ+GGP4Ol4bUTiUwwIhbmLvyhtylutjiBY/2GDpbX5bCPlEU2WGijsBmRaQIBe2y4nliUNyvT8dT85PBNNBWGU/2eICLxXcxwdAycSoJ/1kqPsdnw4+i95WFhI9iARCosnBzMZQ8tkilrBVD82wN1pAO7rcxwwBmm69vEUm3Tdbm0lXwTx45NKU2dPFr0EUvWV4Mo/0CAyg6qqLKqj1dm9CdvIVK4N+OBao2EoajUepQhOUADM+zX92lJr01/0r+945nupwOlaul2mrPDbjlnEzx4zCFjbFajZIAv0sE9Nh+uIriGo2IegtJa2pIiTzTVEaV+Wd0WZdxReKkfpIYcat1D2kWnQZirkAwI3h+XuVndUbwTo5NQheQIl9hayVXPyaoomIe4jlH8+3VanW8U6DVU90P64AZT');
-        ls.setItem(`${hashOfName}iv`, '136,179,253,164,23,155,253,237,52,133,22,146,93,125,19,237');
+        test('user is logged in if off-line', () => {
+            ls.setItem(hashOfName, 'xyEQklDaPj/JfcGsZ+y3WGSmmBBB30exF/Yr6Br86nkgNvvpG0aKdR3wkCyxcDDOAGhNcbLFTWLKG8ov2PPxKz95tYuLMrDa1NE9Fn9AJHVMiYHlgkWzKe+vRaUMO2YGtAZyB/y7U1lX+un8JQfauX/Az7myXeeLq6C4+YzHzTRBuE5Q3bxh1uG9mmHEwqN/cYDA87MpqiTprhMCuUpod8Ven3jpgoVnHuCLkOaUDycgJXwLnasa4PVKoCBiGICLQ/nc78uNmJuL1NgHL2pE64I42ha2+cUDKYf6Zbpzop9H4+P2HTl0v+OZYJMumYaP+iN9NWVRV+yyP7ub4fpHFJb7jyp42kN1eT4lNiq74DcUHks2kBCZunKqeJDmE+xPciql9C53AQVr5+5q/YBxgqw0oOoWeXI5pZ2nXwpn+Fuo4+mzXN414PqTD3omlIJzojCmsIC8u24ZdQxuaT3kq0NL2KxsWM3XQ+GGP4Ol4bUTiUwwIhbmLvyhtylutjiBY/2GDpbX5bCPlEU2WGijsBmRaQIBe2y4nliUNyvT8dT85PBNNBWGU/2eICLxXcxwdAycSoJ/1kqPsdnw4+i95WFhI9iARCosnBzMZQ8tkilrBVD82wN1pAO7rcxwwBmm69vEUm3Tdbm0lXwTx45NKU2dPFr0EUvWV4Mo/0CAyg6qqLKqj1dm9CdvIVK4N+OBao2EoajUepQhOUADM+zX92lJr01/0r+945nupwOlaul2mrPDbjlnEzx4zCFjbFajZIAv0sE9Nh+uIriGo2IegtJa2pIiTzTVEaV+Wd0WZdxReKkfpIYcat1D2kWnQZirkAwI3h+XuVndUbwTo5NQheQIl9hayVXPyaoomIe4jlH8+3VanW8U6DVU90P64AZT');
+            ls.setItem(`${hashOfName}iv`, '136,179,253,164,23,155,253,237,52,133,22,146,93,125,19,237');
 
-        const API = client({
-            defaultUrl: fakeApiUrl,
-            poster: () => {
-                throw new Error('offline');
-            },
-            getDataFromServer: () => {
-                throw new Error('offline');
-            },
-            localStorage: ls,
-        });
-        return API.login({
-            params: {
-                user: {
-                    username: name,
-                    password,
+            const API = client({
+                defaultUrl: fakeApiUrl,
+                poster: () => {
+                    throw new Error('offline');
                 },
-            },
-        }).then(() => {
-            assert.ok(ls.getItem('user'), 'not load decrypted user');
-            return assert.equal(API.isLoggedIn, name);
+                getDataFromServer: () => {
+                    throw new Error('offline');
+                },
+                localStorage: ls,
+            });
+            return API.login({
+                params: {
+                    user: {
+                        username: name,
+                        password,
+                    },
+                },
+            }).then(() => {
+                assert.ok(ls.getItem('user'), 'not load decrypted user');
+                return assert.equal(API.isLoggedIn, name);
+            });
         });
     });
 });
@@ -421,17 +450,40 @@ suite('client base real', () => {
 
 suite('client user real', () => {
     const name = "test" + (Math.random()+"").replace(".","");
-    const hashOfName = 'z4DNiu1ILV0VJ9fccvzv+E5jJlkoSER9LcCw6H38mpA=';
     const password = 'm0nk3y123';
+    calculateHashOfName(name).then((res) => {
+        const hashOfName = res;
     
-    // should return an error user exists
-    test('try and create a user that already exists', () => {
-        localStorage.clear();
-        
-        const API = client({
-            defaultUrl: realApiUrl,
+        // should return an error user exists
+        test('try and create a user that already exists', () => {
+            localStorage.clear();
+            
+            const API = client({
+                defaultUrl: realApiUrl,
+            });
+            try {
+                return API.create({
+                    params: {
+                        user: {
+                            username: name,
+                            email: 'marcus@kano.me',
+                            password,
+                        },
+                    },
+                    populate: {
+                        id: 'user.id',
+                    },
+                });
+            } catch (e) {
+            assert.equal(e.message, "user already exists");
+            }
         });
-        try {
+        test('can a user be created', () => {
+            localStorage.clear();
+            const API = client({
+                defaultUrl: realApiUrl,
+            });
+            const name = "test" + (Math.random()+"").replace(".","");
             return API.create({
                 params: {
                     user: {
@@ -442,75 +494,54 @@ suite('client user real', () => {
                 },
                 populate: {
                     id: 'user.id',
+                    username: 'user.username',
                 },
+            }).then(async (user) => {
+                assert.equal(await user.username, name);
             });
-        } catch (e) {
-           assert.equal(e.message, "user already exists");
-        }
-    });
-    test('can a user be created', () => {
-        localStorage.clear();
-        const API = client({
-            defaultUrl: realApiUrl,
         });
-        const name = "test" + (Math.random()+"").replace(".","");
-        return API.create({
-            params: {
-                user: {
-                    username: name,
-                    email: 'marcus@kano.me',
-                    password,
+        test('user is logged in', () => {
+            localStorage.clear();
+            const API = client({
+                defaultUrl: realApiUrl,
+            });
+            return API.login({
+                params: {
+                    user: {
+                        username: name,
+                        password,
+                    },
                 },
-            },
-            populate: {
-                id: 'user.id',
-                username: 'user.username',
-            },
-        }).then(async (user) => {
-            assert.equal(await user.username, name);
+            }).then(() => {
+                assert.equal(API.isLoggedIn, name);
+            });
         });
-    });
-    test('user is logged in', () => {
-        localStorage.clear();
-        const API = client({
-            defaultUrl: realApiUrl,
-        });
-        return API.login({
-            params: {
-                user: {
-                    username: name,
-                    password,
-                },
-            },
-        }).then(() => {
-            assert.equal(API.isLoggedIn, name);
-        });
-    });
-    test('user is logged in and out', () => {
-        localStorage.clear();
+        test('user is logged in and out', () => {
+            localStorage.clear();
 
-        const API = client({
-            defaultUrl: realApiUrl,
-        });
-        return API.login({
-            params: {
-                user: {
-                    username: name,
-                    password,
+            const API = client({
+                defaultUrl: realApiUrl,
+            });
+            return API.login({
+                params: {
+                    user: {
+                        username: name,
+                        password,
+                    },
                 },
-            },
-        }).then(() => API.logout()).then(() => {
-            assert.ok(localStorage.getItem(hashOfName), 'not save encryptString');
-            return assert.equal(API.isLoggedIn, false);
+            }).then(() => API.logout()).then(() => {
+                assert.ok(localStorage.getItem(hashOfName), 'not save encryptString');
+                return assert.equal(API.isLoggedIn, false);
+            });
         });
-    });
-    test('logout should return promise', () => {
-        localStorage.clear();
+        test('logout should return promise', () => {
+            localStorage.clear();
 
-        const API = client({
-            defaultUrl: realApiUrl,
+            const API = client({
+                defaultUrl: realApiUrl,
+            });
+            API.logout().then(() => assert.equal(API.isLoggedIn, false));
         });
-        API.logout().then(() => assert.equal(API.isLoggedIn, false));
     });
 });
 
