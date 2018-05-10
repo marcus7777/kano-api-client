@@ -16,8 +16,6 @@ function calculateHashOfName(name) {
         return arrayToBase64(hash);
     });
 
-    console.log(hashOfName);
-
     return hashOfName;
 }
 
