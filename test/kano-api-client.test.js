@@ -463,9 +463,10 @@ suite('client user real', () => {
             },
             populate: {
                 id: 'user.id',
+                username: 'user.username'
             },
         }).then(async (user) => {
-            assert.ok(await user.id);
+            assert.equal(await user.username, name);
         });
     });
     test('user is logged in', () => {
