@@ -109,9 +109,7 @@ suite('client base', () => {
             defaultUrl: fakeApiUrl,
             poster() {
                 return new Promise(((resolve, reject) => {
-                    resolve({
-                        data: 'true',
-                    });
+                    resolve(true);
                 }));
             },
         });
@@ -160,10 +158,8 @@ suite('client base', () => {
         const API = client({
             defaultUrl: fakeApiUrl,
             poster() {
-                return new Promise(((resolve, reject) => {
-                    resolve({
-                        data: 'true',
-                    });
+                return new Promise(((resolve) => {
+                    resolve(true);
                 }));
             },
         });
@@ -182,7 +178,7 @@ suite('client base', () => {
             defaultUrl: fakeApiUrl,
             poster() {
                 return new Promise(((resolve, reject) => {
-                    reject();
+                    reject(true);
                 }));
             },
         });
@@ -473,7 +469,7 @@ suite('client user real', () => {
                     },
                 });
             } catch (e) {
-                assert.equal(e.message, "user already exists");
+                assert.equal(e.message, "Conflict");
             }
         });
         test('can a user be created', () => {

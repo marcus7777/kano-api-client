@@ -260,16 +260,20 @@ export default function (settings) {
             theFetch.headers.authorization = `Bearer ${accessToken}`;
         }
         return fetch(url, theFetch).then((response) => {
-            if (response.statusText === "Conflict") {
-                throw new Error('user already exists');
-            }
-            return response.json().then((theData) => {
-                if (response.status < 300) {
-                    renewToken();
-                    return theData;
+            if (response.statusText === "Conflict" || response.status > 300) {
+                throw new Error(response.statusText);
+            } else if (response.bodyUsed === false) {
+                try {
+                    return response.json().then((theData) => {
+                        if (accessToken) {
+                            renewToken();
+                        }
+                        return theData;
+                    })
+                } catch (e) {
+                    return true
                 }
-                throw new Error(`${response.message} ${response.status}`);
-            });
+            }
         });
     }
     if (settings.poster) {
@@ -387,8 +391,8 @@ export default function (settings) {
             if (args && args.params && args.params.user && args.params.user.email) {
                 const email = args.params.user.email;
                 if (/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}/gi.test(email)) {
-                    return poster(args.params.user, 'accounts/forgotUsername').then((response) => {
-                        if (response.data === 'true') {
+                    return poster(args.params.user, 'accounts/forgotUsername').then((ok) => {
+                        if (ok === true) {
                             return API.read(args);
                         }
                         throw new Error('invalid email');
@@ -403,8 +407,8 @@ export default function (settings) {
             if (args && args.params && args.params.user && args.params.user.username) {
                 const username = args.params.user.username;
                 if (/^[0-9a-z]*$/gi.test(username)) {
-                    return poster(args.params.user, 'accounts/forgotPassword').then((response) => {
-                        if (response.data === 'true') {
+                    return poster(args.params.user, 'accounts/forgotPassword').then((ok) => {
+                        if (ok === true) {
                             return API.read(args);
                         }
                         throw new Error('invalid username');
