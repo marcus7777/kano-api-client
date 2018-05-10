@@ -420,7 +420,7 @@ suite('client base real', () => {
 });
 
 suite('client user real', () => {
-    const name = 'testing';
+    const name = "test" + (Math.random()+"").replace(".","");
     const hashOfName = 'z4DNiu1ILV0VJ9fccvzv+E5jJlkoSER9LcCw6H38mpA=';
     const password = 'm0nk3y123';
     
@@ -456,7 +456,7 @@ suite('client user real', () => {
         return API.create({
             params: {
                 user: {
-                    username: "test" + (Math.random()+"").replace(".",""),
+                    username: name,
                     email: 'marcus@kano.me',
                     password,
                 },
