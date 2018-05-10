@@ -259,6 +259,9 @@ export default function (settings) {
             theFetch.headers.authorization = `Bearer ${accessToken}`;
         }
         return fetch(url, theFetch).then((response) => {
+            if (response.statusText === "Conflict") {
+                throw new Error('user already exists');
+            }
             return response.json().then((theData) => {
                 if (response.status < 300) {
                     renewToken();
