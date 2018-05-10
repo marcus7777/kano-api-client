@@ -458,7 +458,7 @@ suite('client user real', () => {
         return API.create({
             params: {
                 user: {
-                    username: name,
+                    username: "test" + (Math.random()+"").replace(".",""),
                     email: 'marcus@kano.me',
                     password,
                 },
@@ -467,7 +467,7 @@ suite('client user real', () => {
                 id: 'user.id',
             },
         }).then(async (user) => {
-            assert.equal(await user.id, '5ae9b582a82d9f26ec6ea2ea');
+            assert.ok(await user.id);
         });
     });
     test('user is logged in', () => {
