@@ -453,6 +453,7 @@ suite('client user real', () => {
         const API = client({
             defaultUrl: realApiUrl,
         });
+        const name = "test" + (Math.random()+"").replace(".","");
         return API.create({
             params: {
                 user: {
