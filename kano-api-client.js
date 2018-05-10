@@ -386,7 +386,7 @@ export default function (settings) {
             if (args && args.params && args.params.user && args.params.user.email) {
                 const email = args.params.user.email;
                 if (/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}/gi.test(email)) {
-                    return poster(email, 'accounts/forgotUsername').then((response) => {
+                    return poster(args.params.user, 'accounts/forgotUsername').then((response) => {
                         if (response.data === 'true') {
                             return API.read(args);
                         }
@@ -402,7 +402,7 @@ export default function (settings) {
             if (args && args.params && args.params.user && args.params.user.username) {
                 const username = args.params.user.username;
                 if (/^[0-9a-z]*$/gi.test(username)) {
-                    return poster(username, 'accounts/forgotPassword').then((response) => {
+                    return poster(args.params.user, 'accounts/forgotPassword').then((response) => {
                         if (response.data === 'true') {
                             return API.read(args);
                         }
