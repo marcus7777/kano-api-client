@@ -447,15 +447,15 @@ suite('client base real', () => {
 });
 
 suite('client user real', () => {
-    const name = "test" + (Math.random()+"").replace(".","");
+    const name = "test" + (Math.random() + "").replace(".", "");
     const password = 'm0nk3y123';
     calculateHashOfName(name).then((res) => {
         const hashOfName = res;
-    
+
         // should return an error user exists
         test('try and create a user that already exists', () => {
             localStorage.clear();
-            
+
             const API = client({
                 defaultUrl: realApiUrl,
             });
@@ -473,7 +473,7 @@ suite('client user real', () => {
                     },
                 });
             } catch (e) {
-            assert.equal(e.message, "user already exists");
+                assert.equal(e.message, "user already exists");
             }
         });
         test('can a user be created', () => {
@@ -481,7 +481,7 @@ suite('client user real', () => {
             const API = client({
                 defaultUrl: realApiUrl,
             });
-            const name = "test" + (Math.random()+"").replace(".","");
+            const name = "test" + (Math.random() + "").replace(".", "");
             return API.create({
                 params: {
                     user: {
