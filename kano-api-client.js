@@ -135,10 +135,11 @@ export default function (settings) {
                                 });
                             }).then(() => {
                                 resolve(ifArray(gunData));
-                            })
-                                .catch((e) => {
-                                    reject(e);
-                                });
+                                return
+                            }).catch((e) => {
+                                reject(e);
+                                return
+                            });
                         }
                     }
                 } else {
