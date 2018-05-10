@@ -463,7 +463,7 @@ suite('client user real', () => {
             },
             populate: {
                 id: 'user.id',
-                username: 'user.username'
+                username: 'user.username',
             },
         }).then(async (user) => {
             assert.equal(await user.username, name);
