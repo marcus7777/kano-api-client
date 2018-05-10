@@ -334,18 +334,20 @@ suite('client base real', () => {
         const API = client({
             defaultUrl: realApiUrl,
         });
-        const query = 'users.marcus7778';
-        API.check(query).then((exists) => {
+        const query = 'users.test' + (Math.random()+"").replace(".","");
+        return API.check(query).then((exists) => {
             assert.equal(exists, false);
+            return
         });
     });
     test('has username been taken', () => {
         const API = client({
             defaultUrl: realApiUrl,
         });
-        const query = 'users.marcus7777';
-        API.check(query).then((exists) => {
+        const query = 'users.nectarsoft';
+        return API.check(query).then((exists) => {
             assert.equal(exists, true);
+            return
         });
     });
     test('forgotUsername for a no email', () => {
@@ -353,7 +355,7 @@ suite('client base real', () => {
             defaultUrl: realApiUrl,
         });
         try {
-            API.forgotUsername({
+            return API.forgotUsername({
                 params: {
                     user: {
                     },
