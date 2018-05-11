@@ -3,7 +3,7 @@ import client from '../kano-api-client.js';
 const mockApiUrl = './mockApi/';
 const realApiUrl = 'http://ksworldapi-dev.us-west-1.elasticbeanstalk.com/'; // temporary for test, of course
 
-const ls = {
+const ls = { // mock localStorage
     _data: {},
     setItem(id, val) { return this._data[id] = val; },
     getItem(id) { return this._data[id]; },
