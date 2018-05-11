@@ -269,6 +269,8 @@ export default function (settings) {
                             renewToken();
                         }
                         return theData;
+                    }).catch( (e) => {
+                        return true
                     })
                 } catch (e) {
                     return true
