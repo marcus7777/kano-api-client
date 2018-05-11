@@ -65,6 +65,14 @@ suite('client base mocked', () => {
         });
         assert.equal(API.isLoggedIn, false);
     });
+    test('make sure there is user logged in', () => {
+        ls.setItem("user", '{"mapTo":"users.test08956548851822832","username":"test08956548851822832","_localToken":"u8X9oWDTTQ7CL9_LyQaTBkWwqXOCAQvznGnBqEFeJ8s","_accessToken":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODM2MzI0ODguODk2LCJ1c2VyIjp7ImlkIjoxMDI2Miwicm9sZXMiOltdfX0.X24m9Z4dgDI_zLToCrhSYi6LRfYzBbY5jvGk7YyyiLU","renew":1554832488942}')
+        const API = client({
+            defaultUrl: mockApiUrl,
+            localStorage: ls,
+        });
+        assert.equal(API.isLoggedIn, "test08956548851822832");
+    });
     test('has username been not taken', () => {
         const API = client({
             defaultUrl: mockApiUrl,

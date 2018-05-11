@@ -10,7 +10,7 @@ export default function (settings) {
     const initialStateLoggedInUser = ls.getItem('user');
     let initialStateUser = false;
     if (initialStateLoggedInUser) {
-        initialStateUser = initialStateLoggedInUser.username;
+        initialStateUser = JSON.parse(initialStateLoggedInUser).username;
     }
     const stackOfXhr = {};
     // libraries
@@ -385,7 +385,7 @@ export default function (settings) {
         });
     }
     let API = {
-        isLoggedIn: initialStateUser.username || false,
+        isLoggedIn: initialStateUser || false,
         check: (query) => {
             return getter(query, 'check', true).then((data) => { return !!data; });
         },
