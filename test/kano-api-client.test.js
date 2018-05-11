@@ -334,7 +334,7 @@ suite('client base real', () => {
         const API = client({
             defaultUrl: realApiUrl,
         });
-        const query = 'users.test' + (Math.random()+"").replace(".","");
+        const query = 'users.test' + (Math.random() + "").replace(".", "");
         return API.check(query).then((exists) => {
             assert.equal(exists, false);
             return

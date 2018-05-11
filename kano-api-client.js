@@ -269,7 +269,7 @@ export default function (settings) {
                             renewToken();
                         }
                         return theData;
-                    }).catch( (e) => {
+                    }).catch((e) => {
                         return true
                     })
                 } catch (e) {
