@@ -1,6 +1,6 @@
 import client from '../kano-api-client.js';
 
-const fakeApiUrl = './fakeApi/';
+const mockApiUrl = './mockApi/';
 const realApiUrl = 'http://ksworldapi-dev.us-west-1.elasticbeanstalk.com/'; // temporary for test, of course
 
 const ls = {
@@ -36,38 +36,38 @@ function arrayToBase64(ab) {
     return window.btoa(arr1.join('')); // Form a string
 }
 
-// START tests with fake API
+// START tests with mock API
 
-suite('client base', () => {
+suite('client base mocked', () => {
     test('client throws if no settings', () => {
         try {
             client();
         } catch (e) {
-            assert.equal(e.message, "settings are needed eg. client({defaultUrl:'./fakeApi'})");
+            assert.equal(e.message, "settings are needed eg. client({defaultUrl:'./mockApi'})");
         }
     });
     test('client throws if settings but no default url', () => {
         try {
             client({});
         } catch (e) {
-            assert.equal(e.message, "defaultUrl is needed eg. client({defaultUrl:'./fakeApi'})");
+            assert.equal(e.message, "defaultUrl is needed eg. client({defaultUrl:'./mockApi'})");
         }
     });
-    test("client loads if client({defaultUrl:'./fakeApi'})", () => {
+    test("client loads if client({defaultUrl:'./mockApi'})", () => {
         const API = client({
-            defaultUrl: fakeApiUrl,
+            defaultUrl: mockApiUrl,
         });
         assert.ok(API);
     });
     test('make sure there is no user logged in yet', () => {
         const API = client({
-            defaultUrl: fakeApiUrl,
+            defaultUrl: mockApiUrl,
         });
         assert.equal(API.isLoggedIn, false);
     });
     test('has username been not taken', () => {
         const API = client({
-            defaultUrl: fakeApiUrl,
+            defaultUrl: mockApiUrl,
             getDataFromServer: () => new Promise((resolve) => {
                 resolve({ data: 'false' });
             }),
@@ -79,7 +79,7 @@ suite('client base', () => {
     });
     test('has username been taken', () => {
         const API = client({
-            defaultUrl: fakeApiUrl,
+            defaultUrl: mockApiUrl,
             getDataFromServer: () => new Promise((resolve) => {
                 resolve({ data: 'true' });
             }),
@@ -91,7 +91,7 @@ suite('client base', () => {
     });
     test('forgotUsername for a no email', () => {
         const API = client({
-            defaultUrl: fakeApiUrl,
+            defaultUrl: mockApiUrl,
         });
         try {
             API.forgotUsername({
@@ -106,7 +106,7 @@ suite('client base', () => {
     });
     test('forgotUsername for a valid email', () => {
         const API = client({
-            defaultUrl: fakeApiUrl,
+            defaultUrl: mockApiUrl,
             poster() {
                 return new Promise(((resolve, reject) => {
                     resolve(true);
@@ -125,7 +125,7 @@ suite('client base', () => {
     });
     test('forgotUsername for a invalid email', () => {
         const API = client({
-            defaultUrl: fakeApiUrl,
+            defaultUrl: mockApiUrl,
         });
         try {
             API.forgotUsername({
@@ -141,7 +141,7 @@ suite('client base', () => {
     });
     test('forgotPassword for a no username', () => {
         const API = client({
-            defaultUrl: fakeApiUrl,
+            defaultUrl: mockApiUrl,
         });
         try {
             API.forgotPassword({
@@ -156,7 +156,7 @@ suite('client base', () => {
     });
     test('forgotPassword for a valid username', () => {
         const API = client({
-            defaultUrl: fakeApiUrl,
+            defaultUrl: mockApiUrl,
             poster() {
                 return new Promise(((resolve) => {
                     resolve(true);
@@ -175,7 +175,7 @@ suite('client base', () => {
     });
     test('forgotPassword for a invalid username', () => {
         const API = client({
-            defaultUrl: fakeApiUrl,
+            defaultUrl: mockApiUrl,
             poster() {
                 return new Promise(((resolve, reject) => {
                     reject(true);
@@ -207,7 +207,7 @@ suite('client user', () => {
         test('can a user be created', () => {
             localStorage.clear();
             const API = client({
-                defaultUrl: fakeApiUrl,
+                defaultUrl: mockApiUrl,
                 poster() {
                     return new Promise(((resolve) => {
                         resolve(JSON.parse('{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}'),
@@ -233,7 +233,7 @@ suite('client user', () => {
         test('user is logged in', () => {
             localStorage.clear();
             const API = client({
-                defaultUrl: fakeApiUrl,
+                defaultUrl: mockApiUrl,
                 poster: () => new Promise((resolve) => {
                     resolve(JSON.parse('{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}'));
                 }),
@@ -256,7 +256,7 @@ suite('client user', () => {
             localStorage.clear();
 
             const API = client({
-                defaultUrl: fakeApiUrl,
+                defaultUrl: mockApiUrl,
                 poster: () => new Promise((resolve) => {
                     resolve(JSON.parse('{"data":{"duration":"57600000","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODI4NjU3OTUuMTA1LCJ1c2VyIjp7ImlkIjoiNWFlOWI1ODJhODJkOWYyNmVjNmVhMmVhIiwicm9sZXMiOltdfX0.0HwbZkelvGFAxX51ihNeNFRqh79xti_jOmn_EyYNsGU","user":{"id":"5ae9b582a82d9f26ec6ea2ea","roles":[],"modified":"2018-05-02T12:56:35.075266"}},"path":"/users/5ae9b582a82d9f26ec6ea2ea"}'));
                 }),
@@ -280,7 +280,7 @@ suite('client user', () => {
             localStorage.clear();
 
             const API = client({
-                defaultUrl: fakeApiUrl,
+                defaultUrl: mockApiUrl,
             });
             API.logout().then(() => assert.equal(API.isLoggedIn, false));
         });
@@ -289,7 +289,7 @@ suite('client user', () => {
             ls.setItem(`${hashOfName}iv`, '136,179,253,164,23,155,253,237,52,133,22,146,93,125,19,237');
 
             const API = client({
-                defaultUrl: fakeApiUrl,
+                defaultUrl: mockApiUrl,
                 poster: () => {
                     throw new Error('offline');
                 },

@@ -1,12 +1,12 @@
 import '../gun/gun.js';
 
 export default function (settings) {
-    if (!settings) throw new Error('settings are needed eg. client({defaultUrl:\'./fakeApi\'})');
+    if (!settings) throw new Error('settings are needed eg. client({defaultUrl:\'./mockApi\'})');
     let ls = localStorage;
     if (settings.localStorage) {
         ls = settings.localStorage;
     }
-    if (!settings.defaultUrl) throw new Error('defaultUrl is needed eg. client({defaultUrl:\'./fakeApi\'})');
+    if (!settings.defaultUrl) throw new Error('defaultUrl is needed eg. client({defaultUrl:\'./mockApi\'})');
     const initialStateLoggedInUser = ls.getItem('user');
     let initialStateUser = false;
     if (initialStateLoggedInUser) {
